@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model with tenant identifier for multi-tenancy
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  companyName String
+  tenantId  String   @unique @default(uuid()) // Unique tenant identifier for multi-tenancy
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  conversations Conversation[]
+  knowledgeBase KnowledgeBase[]
+  widget       Widget?
+}
+
+// Conversation model with tenant identifier for multi-tenancy
+model Conversation {
+  id        String   @id @default(uuid())
+  title     String?
+  tenantId  String   // Foreign key to User.tenantId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User      @relation(fields: [tenantId], references: [tenantId])
+  messages  Message[]
+}
+
+// Message model with tenant identifier for multi-tenancy
+model Message {
+  id             String   @id @default(uuid())
+  content        String
+  conversationId String
+  sender         String   // "user" or "bot"
+  status         String   @default("sent") // "sent", "delivered", "seen"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+// KnowledgeBase model with tenant identifier for multi-tenancy
+model KnowledgeBase {
+  id        String   @id @default(uuid())
+  type      String   // "text" or "qa"
+  question  String?  // For QA pairs
+  answer    String?  // For QA pairs
+  content   String?  // For text entries
+  metadata  String?  // JSON string for additional metadata (e.g., source URL for crawled websites)
+  tenantId  String   // Foreign key to User.tenantId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [tenantId], references: [tenantId])
+}
+
+// Widget model with tenant identifier for multi-tenancy
+model Widget {
+  id             String   @id @default(uuid())
+  tenantId       String   @unique // Foreign key to User.tenantId
+  color          String   @default("#3B82F6") // Default to blue
+  position       String   @default("right") // "right" or "left"
+  welcomeText    String   @default("Hello! How can I help you today?")
+  logoUrl        String?
+  aiSettings     String?  // JSON string for AI settings
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user           User     @relation(fields: [tenantId], references: [tenantId])
+}

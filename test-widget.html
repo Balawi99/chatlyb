@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار ويدجت Chatly</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      direction: rtl;
+    }
+    h1 {
+      color: #3B82F6;
+    }
+    .content {
+      min-height: 500px;
+      border: 1px solid #eee;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    #debug-log {
+      padding: 10px;
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      margin-top: 20px;
+      direction: ltr;
+      font-family: monospace;
+      font-size: 12px;
+      height: 150px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>صفحة اختبار ويدجت الدردشة</h1>
+  
+  <div class="content">
+    <h2>محتوى الصفحة</h2>
+    <p>هذه صفحة اختبار بسيطة للتحقق من عمل ويدجت الدردشة. يجب أن يظهر زر الدردشة في أسفل يمين أو يسار الصفحة.</p>
+    <p>إذا لم يظهر الويدجت، يمكنك التحقق من وحدة تحكم المتصفح (F12) للبحث عن أي أخطاء.</p>
+  </div>
+  
+  <div id="debug-log">
+    <strong>سجل التصحيح:</strong><br>
+  </div>
+
+  <!-- كود إدراج الويدجت -->
+  <script>
+    // Debugging helper
+    function debugLog(message) {
+      const log = document.getElementById('debug-log');
+      log.innerHTML += message + '<br>';
+      log.scrollTop = log.scrollHeight;
+      console.log(message);
+    }
+    
+    debugLog('بدء تحميل الويدجت...');
+    
+    (function(w, d, s, o) {
+      debugLog('بدء تنفيذ دالة الإعداد');
+      w.ChatlyWidget = o;
+      w[o] = w[o] || function() {
+        debugLog('تم استدعاء chatly() مع المعلمات: ' + JSON.stringify(Array.from(arguments)));
+        (w[o].q = w[o].q || []).push(arguments);
+      };
+      
+      debugLog('تهيئة عنصر السكريبت');
+      const js = d.createElement(s);
+      js.id = o;
+      js.src = 'http://localhost:8000/widget.js';
+      js.async = 1;
+      
+      js.onload = function() {
+        debugLog('تم تحميل widget.js بنجاح');
+      };
+      
+      js.onerror = function(e) {
+        debugLog('خطأ في تحميل widget.js: ' + JSON.stringify(e));
+      };
+      
+      debugLog('إضافة عنصر السكريبت إلى الصفحة');
+      d.head.appendChild(js);
+    })(window, document, 'script', 'chatly');
+    
+    debugLog('تهيئة الويدجت مع معرف المستأجر');
+    
+    // Wait a bit to make sure the script is loaded
+    setTimeout(function() {
+      chatly('init', {
+        tenantId: '24e1eabe-6b95-41eb-94fa-700ed31fa7b3',
+      });
+      debugLog('تم استدعاء chatly("init") بمعرف المستأجر');
+    }, 1000);
+  </script>
+</body>
+</html> 

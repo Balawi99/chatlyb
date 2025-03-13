@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار ويدجت Chatly من موقع خارجي</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      direction: rtl;
+    }
+    h1 {
+      color: #3B82F6;
+    }
+    .content {
+      min-height: 500px;
+      border: 1px solid #eee;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    #debug-log {
+      padding: 10px;
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      margin-top: 20px;
+      direction: ltr;
+      font-family: monospace;
+      font-size: 12px;
+      height: 150px;
+      overflow: auto;
+    }
+    .info-box {
+      background-color: #e6f7ff;
+      border: 1px solid #91d5ff;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .warning {
+      background-color: #fffbe6;
+      border: 1px solid #ffe58f;
+    }
+  </style>
+</head>
+<body>
+  <h1>صفحة اختبار ويدجت الدردشة من موقع خارجي</h1>
+  
+  <div class="info-box warning">
+    <strong>ملاحظة هامة:</strong> هذه الصفحة مخصصة لاختبار الويدجت عندما يتم استضافتها من موقع خارجي (خارج localhost).
+    يمكنك استخدام خدمة استضافة مؤقتة مثل <a href="https://jsbin.com/" target="_blank">JSBin</a> أو 
+    <a href="https://codepen.io/" target="_blank">CodePen</a> لاختبار هذا الملف.
+  </div>
+  
+  <div class="content">
+    <h2>محتوى الصفحة</h2>
+    <p>هذه صفحة اختبار بسيطة للتحقق من عمل ويدجت الدردشة في موقع خارجي. يجب أن يظهر زر الدردشة في أسفل يمين أو يسار الصفحة.</p>
+    <p>إذا لم يظهر الويدجت، يمكنك التحقق من وحدة تحكم المتصفح (F12) للبحث عن أي أخطاء.</p>
+  </div>
+  
+  <div id="debug-log">
+    <strong>سجل التصحيح:</strong><br>
+  </div>
+
+  <!-- كود إدراج الويدجت -->
+  <script>
+    // Debugging helper
+    function debugLog(message) {
+      const log = document.getElementById('debug-log');
+      log.innerHTML += message + '<br>';
+      log.scrollTop = log.scrollHeight;
+      console.log(message);
+    }
+    
+    debugLog('بدء تحميل الويدجت... ' + new Date().toISOString());
+    
+    // تحذير إذا كان الموقع مستضاف محليًا
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      debugLog('⚠️ تحذير: تستخدم الصفحة على localhost. هذا الاختبار مخصص للمواقع الخارجية.');
+    }
+    
+    // استبدل عنوان URL هنا بعنوان خادم API الخاص بك
+    var API_SERVER = 'http://localhost:8000';
+    
+    debugLog('استخدام خادم API: ' + API_SERVER);
+    
+    (function(w, d, t, u) {
+      debugLog('بدء تنفيذ دالة الإعداد');
+      w.ChatlyWidget = o;
+      w[o] = w[o] || function() {
+        debugLog('تم استدعاء chatly() مع المعلمات: ' + JSON.stringify(Array.from(arguments)));
+        (w[o].q = w[o].q || []).push(arguments);
+      };
+      
+      debugLog('تهيئة عنصر السكريبت');
+      const js = d.createElement(t);
+      js.id = o;
+      js.src = API_SERVER + '/widget.js';
+      js.async = 1;
+      
+      js.onload = function() {
+        debugLog('تم تحميل widget.js بنجاح');
+      };
+      
+      js.onerror = function(e) {
+        debugLog('خطأ في تحميل widget.js: ' + JSON.stringify(e));
+      };
+      
+      debugLog('إضافة عنصر السكريبت إلى الصفحة');
+      d.head.appendChild(js);
+    })(window, document, 'script', 'chatly');
+    
+    debugLog('تهيئة الويدجت مع معرف المستأجر');
+    
+    // Wait a bit to make sure the script is loaded
+    setTimeout(function() {
+      debugLog('محاولة تهيئة الويدجت بعد تأخير مخطط...');
+      chatly('init', {
+        tenantId: '24e1eabe-6b95-41eb-94fa-700ed31fa7b3',
+      });
+      debugLog('تم استدعاء chatly("init") بمعرف المستأجر');
+    }, 1500);
+  </script>
+</body>
+</html> 
