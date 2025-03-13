@@ -85,6 +85,9 @@ app.get('/widget.js', cors({
         })
           .then(response => {
             console.log('Widget config response:', response);
+            if (!response.ok) {
+              throw new Error('Failed to fetch widget configuration');
+            }
             return response.json();
           })
           .then(data => {
@@ -316,22 +319,16 @@ app.get('/widget.js', cors({
           console.log('DOM loaded, checking for chatly widget');
           if (window.chatlyEmbed && window.chatlyEmbed.tenantId) {
             createWidget(window.chatlyEmbed.tenantId);
-          } else if (window.ChatlyWidget && typeof window.ChatlyWidget === 'function') {
-            // Continue with initialization if using the function-style initialization
-            console.log('Using function-style initialization');
           }
         });
       } else {
         console.log('DOM already loaded, initializing immediately');
         if (window.chatlyEmbed && window.chatlyEmbed.tenantId) {
           createWidget(window.chatlyEmbed.tenantId);
-        } else if (window.ChatlyWidget && typeof window.ChatlyWidget === 'function') {
-          // Continue with initialization if using the function-style initialization
-          console.log('Using function-style initialization');
         }
       }
 
-      // Public API
+      // Public API for function-style initialization
       window.chatly = function(method, options) {
         console.log('chatly API called with method:', method, 'options:', options);
         if (method === 'init' && options && options.tenantId) {
